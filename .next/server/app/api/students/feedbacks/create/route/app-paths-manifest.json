@@ -1,0 +1,3 @@
+{
+  "/api/students/feedbacks/create/route": "app/api/students/feedbacks/create/route.js"
+}

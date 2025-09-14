@@ -1,0 +1,8 @@
+{
+  "/page": "app/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/poolers/route": "app/api/poolers/route.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/notifications/route": "app/api/notifications/route.js",
+  "/api/users/bio/route": "app/api/users/bio/route.js"
+}

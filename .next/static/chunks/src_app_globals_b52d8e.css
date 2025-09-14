@@ -1,0 +1,97 @@
+/* [project]/src/app/globals.css [app-client] (css) */
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--main_color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--main_color_light);
+}
+
+:root {
+  --main_background: #131217;
+  --sec_background: #1b1a1f;
+  --main_color: #5dbd4b;
+  --main_color_dark: #0d1301;
+  --main_color_light: #46ff46;
+  --light_blue: #5b8bd1;
+  --Header_grey: #64758a;
+  --Par_grey: #94a2b9;
+  --light_grey: #f4f4f4;
+  --border_grey: #e7e7e7;
+  --main_font: "Ubuntu", sans-serif;
+  --Sec_Font: "Poppins", sans-serif;
+  --Dot_font: "Dot Matrix", sans-serif;
+  --playable_font: "Seri EA", sans-serif;
+}
+
+h1, h2, h3, h4, button {
+  font-family: var(--main_font);
+  -webkit-font-smoothing: antialiased;
+  color: var(--Header_grey);
+}
+
+p, span, input {
+  font-family: var(--Sec_Font);
+  color: var(--Par_grey);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background-color: var(--main_background);
+}
+
+span {
+  font-weight: 100;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: .2;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: .2;
+  }
+}
+
+.foo .Toastify__toast-theme--light {
+  background: #2c2c30e6;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid #ffffff0d;
+  color: #fff;
+}
+
+.foo .Toastify__progress-bar--error {
+  background-color: var(--main_color_light);
+}
+
+.foo .Toastify__close-button > svg {
+  color: #fff;
+}
+
+/*# sourceMappingURL=src_app_globals_b52d8e.css.map*/
