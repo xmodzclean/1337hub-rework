@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { fetch42API } from "@/utils/apiErrorHandler";
 import { getGender } from "@/utils/get_gender";
 
 export async function GET(req: Request) {
@@ -15,14 +16,14 @@ export async function GET(req: Request) {
   }
 
   try {
+    // Extract the Bearer token from Authorization header
+    const accessToken = AccessToken.replace('Bearer ', '');
+    
     // Fetch data from the 42 API
-    const response = await fetch(
+    const response = await fetch42API(
       `https://api.intra.42.fr/v2/cursus_users?filter[campus_id]=${campus_id}&filter[begin_at]=2024-08-26T09:37:00.000Z&page[size]=1&sort=-level`,
-      {
-        headers: {
-          Authorization: `${AccessToken}`,
-        },
-      }
+      {},
+      accessToken
     );
 
     // Handle response errors

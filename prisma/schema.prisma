@@ -92,3 +92,27 @@ model Notification {
 
   @@index([user_id, is_read])
 }
+
+model BannedUser {
+  id          String   @id @default(cuid()) @map("_id")
+  login       String   @unique // 42 login of the banned user
+  reason      String   // Reason for the ban
+  banned_by   String   // Admin who banned the user
+  banned_at   DateTime @default(now())
+  is_active   Boolean  @default(true) // Can be used to temporarily unban
+}
+
+model Announcement {
+  id             String   @id @default(cuid()) @map("_id")
+  title          String
+  message        String
+  created_by     String   // Admin who created the announcement
+  created_at     DateTime @default(now())
+  is_global      Boolean  @default(false) // Global or targeted to specific user
+  target_login   String?  // If not global, specific user login
+  is_active      Boolean  @default(true)
+  is_anonymous   Boolean  @default(false) // If true, hides who created it
+  dismissed_by   String[] @default([]) // Array of user logins who dismissed it
+  viewed_by      String[] @default([]) // Array of user logins who viewed it
+  view_count     Int      @default(0) // Total view count for analytics
+}

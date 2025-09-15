@@ -1,8 +1,12 @@
 {
-  "/page": "app/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/poolers/route": "app/api/poolers/route.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/user/announcements/route": "app/api/user/announcements/route.js",
   "/api/notifications/route": "app/api/notifications/route.js",
-  "/api/users/bio/route": "app/api/users/bio/route.js"
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/users/bio/route": "app/api/users/bio/route.js",
+  "/page": "app/page.js",
+  "/api/poolers/route": "app/api/poolers/route.js",
+  "/api/auth/check-ban/route": "app/api/auth/check-ban/route.js",
+  "/ranking/page": "app/ranking/page.js",
+  "/api/students/route": "app/api/students/route.js",
+  "/api/students/feedbacks/given/route": "app/api/students/feedbacks/given/route.js"
 }

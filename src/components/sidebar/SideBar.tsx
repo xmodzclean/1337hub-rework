@@ -14,6 +14,7 @@ import {
   FaRocket,
   FaWindowClose,
   FaGraduationCap,
+  FaUserShield,
 } from "react-icons/fa";
 
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
@@ -21,6 +22,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import useMobileDetection from "@/hooks/useMobile";
+import AdminPanel from "@/components/admin_panel/AdminPanel";
 
 import _13bg from "../../../public/logos/13bg.png";
 
@@ -300,51 +302,132 @@ const SideBarElement: React.FC<SideElementProps> = ({
   );
 };
 
+const AdminPanelContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100000;
+  display: flex;
+
+  .admin-panel-overlay {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+  }
+
+  .admin-panel-content {
+    width: 600px;
+    height: 100vh;
+    background: linear-gradient(135deg, rgba(33, 33, 37, 0.98), rgba(44, 44, 48, 0.98));
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .admin-panel-content {
+      width: 100%;
+    }
+  }
+`;
+
 const SideBar = () => {
   const path = usePathname();
   const [IsOpen, setIsOpen] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
   const isMobile = useMobileDetection();
+  const { data: session } = useSession();
+
+  // Check if user is admin
+  const isAdmin = (session?.user as any)?.login === 'azaki' || (session?.user as any)?.login === 'amezioun';
 
   const ToggleSideBar = () => {
     setIsOpen((prev) => !prev);
   };
 
-  return (
-    <StyledSideBar $is_open={IsOpen}>
-      <Link href={!isMobile ? '/' : ''}>
-        <div
-          onClick={ToggleSideBar}
-          className="LogoPlaceHolder"
-          style={{ backgroundColor: path == "/" ? "var(--main_color)" : "" }}
-        >
-          {!isMobile ? (
-            <img src={"/13HUB.png"} className="MainLogo"/>
-          ) : IsOpen ? (
-            <FaWindowClose size={20} />
-          ) : (
-            <FaEllipsisV size={20} />
-          )}
-        </div>
-      </Link>
+  const handleAdminPanelToggle = () => {
+    setShowAdminPanel((prev) => !prev);
+  };
 
-      <div className="ListBar">
-        {List.map((ListItem, key) => {
-          return (
-            <SideBarElement
-              key={key}
-              is_first={ListItem.is_first}
-              icon={ListItem.icon}
-              is_last={ListItem.is_last}
-              title={ListItem.name}
-              is_active={path === ListItem.path}
-              path={ListItem.path}
-              setIsOpen={setIsOpen}
-              is_under_dev = {ListItem.is_underdev}
-            />
-          );
-        })}
-      </div>
-    </StyledSideBar>
+  return (
+    <>
+      <StyledSideBar $is_open={IsOpen}>
+        <Link href={!isMobile ? '/' : ''}>
+          <div
+            onClick={ToggleSideBar}
+            className="LogoPlaceHolder"
+            style={{ backgroundColor: path == "/" ? "var(--main_color)" : "" }}
+          >
+            {!isMobile ? (
+              <img src={"/13HUB.png"} className="MainLogo"/>
+            ) : IsOpen ? (
+              <FaWindowClose size={20} />
+            ) : (
+              <FaEllipsisV size={20} />
+            )}
+          </div>
+        </Link>
+
+        <div className="ListBar">
+          {/* Admin Panel Button - Only show for admin users */}
+          {isAdmin && (
+            <div
+              onClick={handleAdminPanelToggle}
+              style={{
+                width: '100%',
+                height: '50px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                clipPath: 'polygon(0% 0%, calc(100% - 20px) 0%, 100% 20px, 100% 100%, 0% 100%)',
+                color: showAdminPanel ? 'var(--main_color_dark)' : 'var(--main_color)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+                backgroundColor: showAdminPanel ? 'var(--main_color)' : 'transparent',
+                transition: '0.2s ease-in-out',
+                marginBottom: '5px'
+              }}
+            >
+              <LightTooltip title="Admin Panel" placement="right">
+                <FaUserShield size={20} />
+              </LightTooltip>
+            </div>
+          )}
+
+          {List.map((ListItem, key) => {
+            return (
+              <SideBarElement
+                key={key}
+                is_first={ListItem.is_first && !isAdmin} // Adjust first item styling if admin panel is present
+                icon={ListItem.icon}
+                is_last={ListItem.is_last}
+                title={ListItem.name}
+                is_active={path === ListItem.path}
+                path={ListItem.path}
+                setIsOpen={setIsOpen}
+                is_under_dev = {ListItem.is_underdev}
+              />
+            );
+          })}
+        </div>
+      </StyledSideBar>
+
+      {/* Admin Panel Modal/Sidebar */}
+      {showAdminPanel && isAdmin && (
+        <AdminPanelContainer>
+          <div className="admin-panel-overlay" onClick={handleAdminPanelToggle} />
+          <div className="admin-panel-content">
+            <AdminPanel />
+          </div>
+        </AdminPanelContainer>
+      )}
+    </>
   );
 };
 

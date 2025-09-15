@@ -17,19 +17,6 @@ export const StyledBanner = styled.div`
     margin-top: 45px;
     height: 40px;
   }
-
-  .MuteIcon {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    color: white;
-    cursor: pointer;
-    opacity: 0.6;
-    transition: opacity 0.3s;
-    &:hover {
-      opacity: 1;
-    }
-  }
 `;
 
 export const BannerTrack = styled.div`

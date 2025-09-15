@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Campuses } from "@/data/Campuses";
 import { getGender } from "@/utils/get_gender";
 import { db } from "../../../../lib/db";
+import { fetch42API } from "@/utils/apiErrorHandler";
 
 interface DbStudent {
   user_name: string;
@@ -36,25 +37,14 @@ export async function GET(req: Request) {
   }
 
   try {
-    const response = await fetch(
+    // Extract the Bearer token from Authorization header
+    const accessToken = AccessToken.replace('Bearer ', '');
+    
+    const response = await fetch42API(
       `https://api.intra.42.fr/v2/cursus_users?&filter[campus_id]=${campus_id}&filter[begin_at]=${started_date}&page[size]=100&page[number]=${page}&sort=-level`,
-      {
-        headers: {
-          Authorization: `${AccessToken}`,
-        },
-      }
+      {},
+      accessToken
     );
-
-    const user = await fetch("https://api.intra.42.fr/v2/users/232764", {
-      headers: {
-        Authorization: `${AccessToken}`,
-      },
-    });
-
-    if (user) {
-      const data = await user.json();
-      console.log(data);
-    }
 
     // Handle response errors
     if (!response.ok) {

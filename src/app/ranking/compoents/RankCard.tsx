@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import React, { FC, forwardRef, Ref } from "react";
 import styled from "styled-components";
-import { FaCheckSquare as VerifiedIcon } from "react-icons/fa";
+import { FaCheckSquare as VerifiedIcon, FaUserShield } from "react-icons/fa";
 import useMobileDetection from "@/hooks/useMobile";
 import AdmissionStatus from "@/components/admission_status/AdmissionStatus";
 
@@ -147,6 +147,59 @@ const StyledCard = styled.div<StyledProps>`
       gap: 3px;
       .VerifiedIcon {
         color : var(--main_color_light);
+      }
+      .ModBadge {
+        color: #fff;
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 50%, #ff4757 100%);
+        border: 1px solid rgba(255, 107, 107, 0.6);
+        border-radius: 6px;
+        padding: 3px 8px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        margin-left: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        backdrop-filter: blur(8px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 
+          0 2px 8px rgba(255, 107, 107, 0.3),
+          0 1px 3px rgba(0, 0, 0, 0.2),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+          transition: left 0.6s ease;
+        }
+
+        &:hover {
+          background: linear-gradient(135deg, #ff7675 0%, #fd79a8 50%, #e84393 100%);
+          border-color: rgba(255, 107, 107, 0.8);
+          transform: scale(1.08) translateY(-1px);
+          box-shadow: 
+            0 4px 16px rgba(255, 107, 107, 0.4),
+            0 2px 6px rgba(0, 0, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          
+          &::before {
+            left: 100%;
+          }
+        }
+
+        .mod-icon {
+          font-size: 0.65rem;
+          filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+        }
       }
     }
 
@@ -319,6 +372,12 @@ const RankCard: FC<Profile & { forwardedRef: Ref<HTMLDivElement> }> = ({
         <h1 className="Card_FullName">
           {nickname ? nickname : FullName}
           {is_verified && <VerifiedIcon className="VerifiedIcon" />}
+          {(UserName === 'azaki' || UserName === 'amezioun') && (
+            <span className="ModBadge">
+              <FaUserShield className="mod-icon" />
+              MOD
+            </span>
+          )}
         </h1>
         <h2 className="Card_UserName">{UserName}</h2>
       </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { fetch42API, handle42APIError } from '@/utils/apiErrorHandler';
 
 interface UserImageHookResult {
   imageUrl: string | null;
@@ -47,11 +48,11 @@ export const useUserImage = (username: string, fallbackUrl?: string | null): Use
       setError(null);
 
       try {
-        const response = await fetch(`https://api.intra.42.fr/v2/users/${username}`, {
-          headers: {
-            'Authorization': `Bearer ${session.accessToken}`,
-          },
-        });
+        const response = await fetch42API(
+          `https://api.intra.42.fr/v2/users/${username}`,
+          {},
+          session.accessToken
+        );
 
         if (!response.ok) {
           throw new Error(`Failed to fetch user data: ${response.status}`);
@@ -68,6 +69,10 @@ export const useUserImage = (username: string, fallbackUrl?: string | null): Use
         return userImageUrl;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user image';
+        
+        // Handle 42 API authentication errors
+        await handle42APIError(err);
+        
         setError(errorMessage);
         
         // Cache null result to avoid repeated failed requests
@@ -99,11 +104,11 @@ export const fetchUserImageFromAPI = async (username: string, accessToken: strin
   }
 
   try {
-    const response = await fetch(`https://api.intra.42.fr/v2/users/${username}`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
+    const response = await fetch42API(
+      `https://api.intra.42.fr/v2/users/${username}`,
+      {},
+      accessToken
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to fetch user data: ${response.status}`);
@@ -118,6 +123,9 @@ export const fetchUserImageFromAPI = async (username: string, accessToken: strin
     return imageUrl;
   } catch (error) {
     console.error('Error fetching user image from 42 API:', error);
+    
+    // Handle 42 API authentication errors
+    await handle42APIError(error);
     
     // Cache null result to avoid repeated failed requests
     imageCache.set(username, null);

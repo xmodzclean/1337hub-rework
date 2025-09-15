@@ -16,6 +16,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useSessionEnd from "@/hooks/useSessionEnd";
+import { handle42APIError } from "@/utils/apiErrorHandler";
 
 // Lazy load heavy components
 const LevelCalculator = lazy(() => import("./compoents/LevelCalculator/LevelCalculator"));
@@ -24,18 +25,21 @@ const Stats = lazy(() => import("./compoents/stats/Stats"));
 const Banner = lazy(() => import("./compoents/Banner/Banner"));
 
 // Icons - load only what we need
-import { FaDiscord } from "react-icons/fa";
+import { FaDiscord, FaArrowUp } from "react-icons/fa";
+
+
 
 const Ranking: React.FC = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [Users, SetUsers] = useState<any[]>([]);
   const [SearchTerm, setSearchTerm] = useState<string>("");
   const [SelectedUser, SetSelectedUser] = useState<any>();
   const [SelectedGender, setSelectedGender] = useState<string>("All");
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
 
   useSessionEnd();
 
-  const loggedInUserCardRef = useRef<HTMLDivElement>(null);
+  const loggedInUserCardRef = useRef<HTMLDivElement | null>(null);
   const observer = useRef<IntersectionObserver | null>(null);
 
   // Initialize with null to prevent loading data until user session is available
@@ -47,7 +51,7 @@ const Ranking: React.FC = () => {
 
   // Auto-set campus and promo based on user's session data (only once when session loads)
   useEffect(() => {
-    if (session?.user && !hasUserManuallyChanged) {
+    if (session?.user && !hasUserManuallyChanged && SelectedCampus === null && SelectedPromo === null) {
       // Set campus based on user's campus_id, fallback to Rabat (75) if not available
       const userCampus = session.user.campus_id || 75;
       setSelectedCampus(userCampus);
@@ -63,7 +67,7 @@ const Ranking: React.FC = () => {
       }
       setSelectedPromo(userPromo);
     }
-  }, [session, hasUserManuallyChanged]);
+  }, [session, hasUserManuallyChanged, SelectedCampus, SelectedPromo]);
 
 
   const lastUserRef = useCallback(
@@ -115,6 +119,10 @@ const Ranking: React.FC = () => {
       });
 
       if (!response.ok) {
+        // Handle 401 specifically for authentication errors
+        if (response.status === 401) {
+          await handle42APIError(null, response);
+        }
         throw new Error("Failed to fetch Students.");
       }
 
@@ -124,6 +132,9 @@ const Ranking: React.FC = () => {
         nextPage: data.length > 0 ? pageParam + 1 : undefined,
       };
     } catch (error) {
+      // Handle potential authentication errors
+      await handle42APIError(error);
+      
       toast.error("Error fetching Students, trying again...", { icon: false });
       throw error;
     }
@@ -133,7 +144,7 @@ const Ranking: React.FC = () => {
     window.open("https://discord.gg/5cZfS8djyg");
   };
 
-  const { data, status, fetchNextPage, hasNextPage, isLoading } =
+  const { data, status: queryStatus, fetchNextPage, hasNextPage, isLoading } =
     useInfiniteQuery({
       queryKey: ["users", SelectedPromo, SelectedCampus, session?.accessToken],
       queryFn: fetchUsers,
@@ -146,9 +157,8 @@ const Ranking: React.FC = () => {
       gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
       enabled:
         session !== undefined &&
-        SelectedPromo !== undefined &&
+        session !== null &&
         SelectedPromo !== null &&
-        SelectedCampus !== undefined &&
         SelectedCampus !== null,
     });
 
@@ -201,21 +211,40 @@ const updateSelectedUserById = (userId: number) => {
   }, [data, session, SelectedGender, SearchTerm]);
 
 
+  // Scroll to top functionality
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  // Handle scroll to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      setShowScrollToTop(scrollTop > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <StyledRanking>
       <ToastContainer
         position="top-right"
         autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        className="foo"
-      />
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          className="foo"
+        />
 
       <div className="Container">
         <div className="LeaderBoardContainer">
@@ -298,7 +327,7 @@ const updateSelectedUserById = (userId: number) => {
             </div>
 
             <div className="Profiles_container">
-              {isLoading || status === "pending" || !Users[0] ? (
+              {isLoading || status === "loading" || !Users[0] ? (
                 <div className="Skeletons">
                   {Array.from({ length: 15 }).map((_, key) => (
                     <Skeleton
@@ -427,6 +456,13 @@ const updateSelectedUserById = (userId: number) => {
           </div> */}
         </div>
       </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollToTop && (
+        <div className="scroll-to-top" onClick={scrollToTop}>
+          <FaArrowUp />
+        </div>
+      )}
     </StyledRanking>
   );
 };

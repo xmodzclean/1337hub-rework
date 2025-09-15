@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { fetch42API } from "@/utils/apiErrorHandler";
 
 interface LogElement {
   begin_at: string;      // "2024-10-22T22:11:03.000Z"
@@ -55,14 +56,14 @@ export async function GET(req: Request) {
   }
 
   try {
+    // Extract the Bearer token from Authorization header
+    const accessToken = AccessToken.replace('Bearer ', '');
+    
     // Fetch data from the 42 API
-    const response = await fetch(
+    const response = await fetch42API(
       `https://api.intra.42.fr/v2/users/${user_id}/locations?&page[size]=100`,
-      {
-        headers: {
-          Authorization: `${AccessToken}`,
-        },
-      }
+      {},
+      accessToken
     );
 
     // Handle response errors

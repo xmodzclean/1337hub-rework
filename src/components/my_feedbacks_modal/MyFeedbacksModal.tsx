@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import { FaCheckSquare as VerifiedIcon } from "react-icons/fa";
 import ConfirmationDialog from "@/components/confirmation_dialog/ConfirmationDialog";
+import FeedbackAvatar from "@/components/feedback_avatar/FeedbackAvatar";
 
 interface Feedback {
   id: string;
@@ -142,24 +143,6 @@ const FeedbackItem = styled.div`
   &:hover {
     background: rgba(255, 255, 255, 0.08);
     transform: translateY(-2px);
-  }
-`;
-
-const Avatar = styled.div<{ $imageUrl: string }>`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-image: url(${props => props.$imageUrl});
-  background-size: cover;
-  background-position: center;
-  border: 2px solid var(--main_color);
-  flex-shrink: 0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
   }
 `;
 
@@ -336,8 +319,10 @@ const MyFeedbacksModal: React.FC<MyFeedbacksModalProps> = ({ open, onClose }) =>
             ) : (
               feedbacks.map((feedback) => (
                 <FeedbackItem key={feedback.id}>
-                  <Avatar 
-                    $imageUrl={feedback.receiver.image_url}
+                  <FeedbackAvatar
+                    username={feedback.receiver.user_name}
+                    imageUrl={feedback.receiver.image_url}
+                    nickname={feedback.receiver.nickname}
                     onClick={() => {
                       window.open(
                         `https://profile.intra.42.fr/users/${feedback.receiver.user_name}`,

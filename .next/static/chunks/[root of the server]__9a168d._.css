@@ -178,5 +178,55 @@ span {
   color: #fff;
 }
 
+.scroll-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, var(--main_color) 0%, #95d131 100%);
+  border: 2px solid #b7fb2b4d;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all .3s cubic-bezier(.4, 0, .2, 1);
+  box-shadow: 0 4px 20px #b7fb2b4d, 0 2px 8px #0003;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.scroll-to-top:hover {
+  transform: translateY(-3px)scale(1.1);
+  background: linear-gradient(135deg, var(--main_color_light) 0%, var(--main_color) 100%);
+  border-color: #b7fb2b99;
+  box-shadow: 0 8px 30px #b7fb2b66, 0 4px 15px #0000004d;
+}
+
+.scroll-to-top:active {
+  transform: translateY(-1px)scale(1.05);
+}
+
+.scroll-to-top svg {
+  color: var(--main_color_dark);
+  font-size: 18px;
+  filter: drop-shadow(0 1px 2px #0000004d);
+}
+
+@media (width <= 768px) {
+  .scroll-to-top {
+    bottom: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+  }
+
+  .scroll-to-top svg {
+    font-size: 16px;
+  }
+}
+
 
 /*# sourceMappingURL=%5Broot%20of%20the%20server%5D__9a168d._.css.map*/

@@ -1,13 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyledBanner, BannerTrack } from "./styled.banner";
-import {
-  FaVolumeMute as MuteIcon,
-  FaVolumeDown as NonMuteIcon,
-} from "react-icons/fa";
 
 const Banner = () => {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [isMuted, setIsMuted] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   const bannerItems = [
@@ -24,35 +18,12 @@ const Banner = () => {
 
   useEffect(() => {
     setIsClient(true);
-    const savedMuteState = localStorage.getItem("isMuted");
-    setIsMuted(savedMuteState === "true" ? true : false);
   }, []);
-
-  useEffect(() => {
-    if (isClient && audioRef.current) {
-      audioRef.current.muted = isMuted;
-      if (!isMuted) {
-        audioRef.current.play().catch(() => {
-          console.log("Autoplay prevented, user interaction required");
-        });
-      }
-    }
-  }, [isMuted, isClient]);
-
-  const toggleMute = () => {
-    setIsMuted((prev) => {
-      const newState = !prev;
-      localStorage.setItem("isMuted", newState.toString());
-      return newState;
-    });
-  };
 
   if (!isClient) return null;
 
   return (
     <StyledBanner>
-      <audio ref={audioRef} src="/banner.mp3" loop />
-
       <BannerTrack>
         {[...bannerItems, ...bannerItems].map((item, idx) => (
           <div key={idx} className="banner-item">
@@ -65,12 +36,6 @@ const Banner = () => {
           </div>
         ))}
       </BannerTrack>
-
-      {isMuted ? (
-        <MuteIcon className="MuteIcon" onClick={toggleMute} />
-      ) : (
-        <NonMuteIcon className="MuteIcon" onClick={toggleMute} />
-      )}
     </StyledBanner>
   );
 };
